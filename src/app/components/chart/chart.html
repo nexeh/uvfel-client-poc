@@ -1,0 +1,167 @@
+<!-- Chart section -->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+          <div class="panel-heading clearfix">
+
+            <div class="col-xs-6">
+              <select class="form-control input-sm" id="chartType" ng-model="vm.config.chartType" ng-options="chartType.name for chartType in vm.config.chartTypeList" ng-change="vm.config.updateEventDataChart(vm.config)">
+              </select>
+            </div>
+
+            <div class="col-xs-6 header-buttons">
+              <span
+                class="glyphicon glyphicon-question-sign help-button pull-right"
+                aria-hidden="true"
+                uib-tooltip="Charts the selected values from the dropdown that happened during the selected time period."
+                tooltip-is-open="chartToltipIsOpen"
+                tooltip-class="help-tooltip"
+                tooltip-append-to-body="true"
+                tooltip-placement="bottom"></span>
+              <button class="btn btn-xs btn-danger pull-right" type="button" data-toggle="collapse" ng-click="vm.config.removeChart(vm.config)"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+              <button class="btn btn-xs btn-primary pull-right" type="button" data-toggle="collapse" data-target="{{'#settings-' + vm.config.id}}" aria-expanded="false" aria-controls="chartHelp"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></button>
+            </div>
+
+          </div>
+          <div class="panel-body">
+
+          <!-- Settings -->
+            <div class="collapse" ng-attr-id="{{ 'settings-' + vm.config.id }}">
+              <div class="clearfix well">
+                <div class="clearfix">
+                  <!-- The tab section of the settings used to navigate -->
+                  <div class="col-xs-3">
+                    <ul class="nav nav-tabs tabs-left"><!-- 'tabs-right' for right tabs -->
+                      <li class="active"><a target="_self" href="{{'#EventPlots-' + vm.config.id}}" data-toggle="tab">Event Plots</a></li>
+                      <li><a target="_self" href="{{'#PlotOptions-' + vm.config.id}}" data-toggle="tab">PlotLine Options</a></li>
+                      <li><a target="_self" href="{{'#ChartOptions-' + vm.config.id}}" data-toggle="tab">Chart Options</a></li>
+                      <li ng-show="vm.config.chartType.optionMenu.title"><a target="_self" href="{{'#ChartSettingOptions-' + vm.config.id}}" data-toggle="tab">{{vm.config.chartType.optionMenu.title}}</a></li>
+                    </ul>
+                  </div>
+                  <!-- Content section of the settings -->
+                  <div class="col-xs-9">
+
+                    <!-- Event Plot settings -->
+                    <div class="tab-content">
+                      <div class="tab-pane active" ng-attr-id="{{ 'EventPlots-' + vm.config.id }}">
+                        <h4>Plotlines</h4>
+                        <button class="btn btn-link" ng-click="selectAll('plot')">Select All</button> |
+                        <button class="btn btn-link" ng-click="unselectAll('plot')">Unselect All</button>
+                        <ul class="checkbox-grid">
+                          <li ng-repeat="option in vm.config.plotOptions">
+                            <label class="truncate"><input
+                              type="checkbox"
+                              name="selectedEventType[]"
+                              value="{{option}}"
+                              ng-checked="vm.config.plotSelection.indexOf(option) > -1"
+                              ng-click="toggleSelection(option, 'plot')"
+                              > {{option}}
+                            </label>
+                          </li>
+                        </ul>
+                      </div>
+
+                      <!-- Plot Option settings -->
+                      <div class="tab-pane" ng-attr-id="{{ 'PlotOptions-' + vm.config.id }}">
+                        <form class="form-horizontal">
+
+                          <div class="form-group">
+                            <label class="control-label col-sm-3" for="showLabels">Show PlotLine Labels</label>
+                            <div class="col-sm-9">
+                              <div class="checkbox">
+                                <input
+                                  id="showLabels"
+                                  type="checkbox"
+                                  name=""
+                                  value=true
+                                  ng-checked="vm.config.options.labels"
+                                  ng-click="togglePlotOption('labels', option)">
+                                  </input>
+                                </div>
+                            </div>
+                          </div>
+
+                          <div class="form-group">
+                            <label class="control-label col-sm-3">Label Alignment</label>
+                            <div class="btn-group col-sm-9">
+                              <label class="btn btn-primary btn-xs" ng-model="vm.config.options.align" uib-btn-radio="'left'">Left</label>
+                              <label class="btn btn-primary btn-xs" ng-model="vm.config.options.align" uib-btn-radio="'center'">Center</label>
+                              <label class="btn btn-primary btn-xs" ng-model="vm.config.options.align" uib-btn-radio="'right'">Right</label>
+                            </div>
+                          </div>
+
+                        </form>
+                      </div><!-- Plot Option settings -->
+
+                      <!-- Chart Option settings -->
+                      <div class="tab-pane" ng-attr-id="{{ 'ChartOptions-' + vm.config.id }}">
+                        <form class="form-horizontal">
+
+                          <div class="form-group">
+                            <label class="control-label col-sm-3">Chart Height</label>
+                            <div class="col-sm-9">
+                              <input type="number" class="form-control" ng-model="vm.config.optionsTemp.height">
+                            </div>
+                          </div>
+
+                          <div class="form-group">
+                            <label class="control-label col-sm-3">Legend</label>
+                            <div class="col-sm-9">
+                              <div class="checkbox">
+                                <input
+                                  type="checkbox"
+                                  value=true
+                                  ng-checked="vm.config.options.legend"
+                                  ng-click="togglePlotOption('legend', option)">
+                                  </input>
+                                </div>
+
+                            </div>
+                          </div>
+
+                          <div class="form-group">
+                            <button type="button" class="btn btn-success pull-right" ng-click="applyOptionChange()">Apply</button>
+                          </div>
+
+                        </form>
+                      </div><!-- Chart Option settings -->
+
+                      <!-- Chart specific settings -->
+                      <div class="tab-pane" ng-attr-id="{{ 'ChartSettingOptions-' + vm.config.id }}">
+                        <form class="form-horizontal">
+                          <div ng-repeat="(key, option) in vm.config.chartType.optionMenu.options">
+                            <h4>{{option.title}}</h4>
+                            <ul class="checkbox-grid">
+                              <li ng-repeat="availOpt in option.options">
+                                <label class="truncate"><input
+                                  type="checkbox"
+                                  name="selectedEventType[]"
+                                  value="{{availOpt.value}}"
+                                  ng-checked="vm.config[key + 'Selection'].indexOf(availOpt.value) > -1"
+                                  ng-click="toggleSelection(availOpt.value, key)"
+                                  > {{availOpt.key}}
+                                </label>
+                              </li>
+                            </ul>
+                          </div>
+
+                        </form>
+                      </div><!-- Chart specific settings -->
+
+                    </div>
+                  </div>
+                </div>
+
+                <button class="btn btn-success pull-right" ng-click="updateChart(vm.config)">Update Chart</button>
+              </div>
+            </div> <!-- settings -->
+
+            <div class="chartcontainer" >
+              <div id="{{vm.config.id}}-annotations" class="chartannotations"></div>
+              <div id="{{vm.config.id}}" class="chartmaster" style="height: {{vm.config.options.height}}px"></div>
+            </div>
+
+          </div>
+       </div>
+    </div>
+  </div> <!-- Chart section -->

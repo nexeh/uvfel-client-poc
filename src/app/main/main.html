@@ -1,0 +1,96 @@
+<div class="container">
+
+  <div>
+    <acme-navbar creation-date="main.creationDate"></acme-navbar>
+  </div>
+
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">Filters</div>
+      <div class="panel-body">
+        <div class="form-group">
+            <label for="deviceId">Device ID</label>
+            <ui-select ng-model="filterData.deviceId" theme="bootstrap">
+              <ui-select-match placeholder="Select or search an event type...">{{$select.selected}}</ui-select-match>
+              <ui-select-choices repeat="device in deviceIdList | filter: $select.search">
+                <div ng-bind-html="device | highlight: $select.search"></div>
+              </ui-select-choices>
+            </ui-select>
+          </div>
+          <div class="form-group">
+            <label  for="startDate">Start Time (UTC)</label>
+
+            <div class='input-group date' id="startDate">
+              <input type="text" class="form-control" ng-model="filterData.startDate" deka-Datetime-picker='"language":"en", "format":"D. M. YYYY H:mm"' />
+              <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+              </span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="endDate">End Time (UTC)</label>
+            <div class='input-group date' id="endDate">
+                <input type="text" class="form-control" ng-model="filterData.endDate" deka-Datetime-picker='"language":"en", "format":"D. M. YYYY H:mm"' />
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+            </div>
+          </div>
+          <div class="col-xs-12">
+            <button type="button" class="btn btn-success pull-right" ng-click="updateFilters()">Update</button>
+          </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">Log Data</div>
+      <div class="panel-body">
+        <div class="collapse clearfix well" id="eventDetailSettings">
+             <button class="btn btn-link" ng-click="selectAll('eventType')">Select All</button> | <button class="btn btn-link" ng-click="unselectAll('eventType')">Unselect All</button>
+            <ul class="checkbox-grid">
+              <li ng-repeat="eventType in eventTypeOptions | orderBy: '+'">
+                <label class="truncate"><input
+                  type="checkbox"
+                  name="selectedEventType[]"
+                  value="{{eventType}}"
+                  ng-checked="eventTypeSelection.indexOf(eventType) > -1"
+                  ng-click="toggleSelection(eventType, 'eventType')"
+                > {{eventType}}
+              </label></li>
+            </ul>
+          </div>
+
+          <div class="gridStyle"
+            ui-grid="gridOptions"
+            ui-grid-pinning
+            ui-grid-resize-columns
+            ui-grid-move-columns
+            ui-grid-auto-resize
+            ui-grid-exporter ui-grid-grouping>
+
+            <div class="grid-msg-overlay" ng-hide="!loading">
+              <div class="msg">
+                <span>
+                  Loading Data...
+                  <i class="fa fa-spinner fa-spin"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-12">
+    <div class="panel panel-default ">
+      <div class="panel-heading">FLY075</div>
+      <div class="panel-body">
+         <simplechart options="altitudeChart" class="col-md-12"></simplechart>
+      </div>
+    </div>
+  </div>
+
+</div>
